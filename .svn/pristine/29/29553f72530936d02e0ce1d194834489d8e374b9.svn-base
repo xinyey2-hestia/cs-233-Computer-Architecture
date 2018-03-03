@@ -1,0 +1,79 @@
+// mips_decode: a decoder for MIPS arithmetic instructions
+//
+// alu_op       (output) - control signal to be sent to the ALU
+// writeenable  (output) - should a new value be captured by the register file
+// rd_src       (output) - should the destination register be rd (0) or rt (1)
+// alu_src2     (output) - should the 2nd ALU source be a register (0) or an immediate (1)
+// except       (output) - set to 1 when we don't recognize an opdcode & funct combination
+// control_type (output) - 00 = fallthrough, 01 = branch_target, 10 = jump_target, 11 = jump_register
+// mem_read     (output) - the register value written is coming from the memory
+// word_we      (output) - we're writing a word's worth of data
+// byte_we      (output) - we're only writing a byte's worth of data
+// byte_load    (output) - we're doing a byte load
+// lui          (output) - the instruction is a lui
+// slt          (output) - the instruction is an slt
+// addm         (output) - the instruction is an addm
+// opcode        (input) - the opcode field from the instruction
+// funct         (input) - the function field from the instruction
+// zero          (input) - from the ALU
+//
+
+module mips_decode(alu_op, writeenable, rd_src, alu_src2, except, control_type,
+                   mem_read, word_we, byte_we, byte_load, lui, slt, addm,
+                   opcode, funct, zero);
+    output [2:0] alu_op;
+    output       writeenable, rd_src, alu_src2, except;
+    output [1:0] control_type;
+    output       mem_read, word_we, byte_we, byte_load, lui, slt, addm;
+    input  [5:0] opcode, funct;
+    input        zero;
+    wire sadd,ssub,sand,sor,snor,sxor,addi,andi,ori,xori,ybne,ybeq,yj,yjr,ylui,yslt,ylw,ylbu,ysw,ysb,yaddm;
+
+    assign addi = opcode==`OP_ADDI;
+    assign andi = opcode==`OP_ANDI;
+    assign ori  = opcode==`OP_ORI;
+    assign xori = opcode==`OP_XORI;
+    assign ybne = opcode==`OP_BNE;
+    assign ybeq = opcode==`OP_BEQ;
+    assign yj   = opcode==`OP_J;
+    assign ylui = opcode==`OP_LUI;
+    assign ylw  = opcode==`OP_LW;
+    assign ylbu = opcode==`OP_LBU;
+    assign ysw  = opcode==`OP_SW;
+    assign ysb = opcode ==`OP_SB;
+
+
+    assign addm = (funct ==`OP0_ADDM)& (opcode == `OP_OTHER0);
+    assign sadd  = (funct==`OP0_ADD)&(opcode == `OP_OTHER0);
+    assign ssub  = (funct==`OP0_SUB)&(opcode == `OP_OTHER0);
+    assign sand =  (funct==`OP0_AND)&(opcode == `OP_OTHER0);
+    assign sor   = (funct==`OP0_OR)&(opcode == `OP_OTHER0);
+    assign snor  = (funct==`OP0_NOR)&(opcode == `OP_OTHER0);
+    assign sxor  = (funct==`OP0_XOR)&(opcode == `OP_OTHER0);
+    assign yjr   = (funct==`OP0_JR)&(opcode==`OP_OTHER0);
+    assign yslt =  (funct==`OP0_SLT)&(opcode==`OP_OTHER0);
+
+
+
+
+
+    nor n1(except,sadd,ssub,sand,sor,snor,sxor,addi,andi,ori,xori,ybne,ybeq,yj,yjr,ylui,yslt,ylw,ylbu,ysw,ysb,yaddm);
+    or o1(alu_src2,addi,andi,ori,xori,ylw,ylbu,ysw,ysb);
+    or o2(rd_src,addi,andi,ori,xori,ylw,ylbu,ylui);
+    or o0( writeenable, sadd,ssub,sand,sor,snor,sxor,addi,andi,ori,xori,ylui,yslt,ylw,ylbu);
+    or o3(alu_op[0],ssub,sor,sxor,ori,xori,ybeq,ybne,yslt);
+    or o4(alu_op[1],sadd,ssub,snor,sxor,addi,xori,ybeq,ybne,ylw,ylbu,ysw,ysb,yslt);
+    or o5(alu_op[2],sand,sor,snor,sxor,andi,ori,xori);
+
+    assign lui = ylui;
+    assign slt = yslt;
+    assign addm = yaddm;
+    assign  byte_load = ylbu;
+
+    assign control_type[0] = (ybne&~zero)|(ybeq&zero)|yjr;
+    assign control_type[1] = yjr|yj;
+    assign mem_read = ylbu|ylw;
+    assign word_we = ysw;
+    assign byte_we = ysb;
+    assign byte_load = ylbu;
+endmodule // mips_decode

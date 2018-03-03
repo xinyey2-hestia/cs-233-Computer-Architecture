@@ -1,0 +1,103 @@
+#! /usr/bin/vvp
+:ivl_version "0.9.6 " "(v0_9_6)";
+:vpi_time_precision + 0;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_0xb33de0 .scope module, "blackbox_test" "blackbox_test" 2 1;
+ .timescale 0 0;
+v0xb4aef0_0 .var "a_in", 0 0;
+v0xb4af70_0 .var "e_in", 0 0;
+v0xb4b020_0 .var "u_in", 0 0;
+v0xb4b0d0_0 .net "x_out", 0 0, L_0xb4a640; 1 drivers
+S_0xb33ed0 .scope module, "bx" "blackbox" 2 5, 3 1, S_0xb33de0;
+ .timescale 0 0;
+L_0xb4a640 .functor AND 1, L_0xb4b1b0, L_0xb4b570, C4<1>, C4<1>;
+L_0xb4b1b0 .functor OR 1, L_0xb4b290, L_0xb4b370, C4<0>, C4<0>;
+L_0xb4b290 .functor AND 1, L_0xb4be90, L_0xb4bae0, C4<1>, C4<1>;
+L_0xb4b370 .functor AND 1, L_0xb4be90, L_0xb4b470, C4<1>, C4<1>;
+L_0xb4b470 .functor NOT 1, L_0xb4bae0, C4<0>, C4<0>, C4<0>;
+L_0xb4b570 .functor OR 1, L_0xb4b620, L_0xb4b720, C4<0>, C4<0>;
+L_0xb4b620 .functor NOT 1, L_0xb4b720, C4<0>, C4<0>, C4<0>;
+L_0xb4b720 .functor AND 1, L_0xb4b7d0, L_0xb4b8d0, C4<1>, C4<1>;
+L_0xb4b7d0 .functor NOT 1, v0xb4b020_0, C4<0>, C4<0>, C4<0>;
+L_0xb4b8d0 .functor OR 1, v0xb4aef0_0, L_0xb4ba30, C4<0>, C4<0>;
+L_0xb4ba30 .functor NOT 1, v0xb4af70_0, C4<0>, C4<0>, C4<0>;
+L_0xb4bae0 .functor OR 1, L_0xb4b9d0, L_0xb4bcc0, C4<0>, C4<0>;
+L_0xb4b9d0 .functor AND 1, L_0xb4bb90, v0xb4aef0_0, C4<1>, C4<1>;
+L_0xb4bb90 .functor NOT 1, v0xb4b020_0, C4<0>, C4<0>, C4<0>;
+L_0xb4bcc0 .functor AND 1, v0xb4af70_0, v0xb4aef0_0, v0xb4b020_0, C4<1>;
+L_0xb4be90 .functor OR 1, L_0xb4bf80, v0xb4aef0_0, L_0xb4bfe0, C4<0>;
+L_0xb4bf80 .functor NOT 1, v0xb4b020_0, C4<0>, C4<0>, C4<0>;
+L_0xb4bfe0 .functor NOT 1, v0xb4af70_0, C4<0>, C4<0>, C4<0>;
+v0xb33fc0_0 .net "a", 0 0, v0xb4aef0_0; 1 drivers
+v0xb4a020_0 .net "e", 0 0, v0xb4af70_0; 1 drivers
+v0xb4a0c0_0 .net "u", 0 0, v0xb4b020_0; 1 drivers
+v0xb4a160_0 .net "w05", 0 0, L_0xb4bcc0; 1 drivers
+v0xb4a210_0 .net "w08", 0 0, L_0xb4b1b0; 1 drivers
+v0xb4a2b0_0 .net "w10", 0 0, L_0xb4b620; 1 drivers
+v0xb4a390_0 .net "w14", 0 0, L_0xb4b8d0; 1 drivers
+v0xb4a430_0 .net "w17", 0 0, L_0xb4bfe0; 1 drivers
+v0xb4a520_0 .net "w22", 0 0, L_0xb4b290; 1 drivers
+v0xb4a5c0_0 .net "w27", 0 0, L_0xb4b370; 1 drivers
+v0xb4a6c0_0 .net "w30", 0 0, L_0xb4b720; 1 drivers
+v0xb4a760_0 .net "w33", 0 0, L_0xb4bb90; 1 drivers
+v0xb4a870_0 .net "w38", 0 0, L_0xb4bae0; 1 drivers
+v0xb4a910_0 .net "w45", 0 0, L_0xb4ba30; 1 drivers
+v0xb4aa30_0 .net "w56", 0 0, L_0xb4b570; 1 drivers
+v0xb4aad0_0 .net "w58", 0 0, L_0xb4be90; 1 drivers
+v0xb4a990_0 .net "w70", 0 0, L_0xb4b470; 1 drivers
+v0xb4ac20_0 .net "w75", 0 0, L_0xb4bf80; 1 drivers
+v0xb4ad40_0 .net "w78", 0 0, L_0xb4b7d0; 1 drivers
+v0xb4adc0_0 .net "w96", 0 0, L_0xb4b9d0; 1 drivers
+v0xb4aca0_0 .alias "x", 0 0, v0xb4b0d0_0;
+    .scope S_0xb33de0;
+T_0 ;
+    %vpi_call 2 9 "$dumpfile", "blackbox.vcd";
+    %vpi_call 2 10 "$dumpvars", 1'sb0, S_0xb33de0;
+    %set/v v0xb4af70_0, 0, 1;
+    %set/v v0xb4b020_0, 0, 1;
+    %set/v v0xb4aef0_0, 0, 1;
+    %delay 10, 0;
+    %set/v v0xb4af70_0, 0, 1;
+    %set/v v0xb4b020_0, 0, 1;
+    %set/v v0xb4aef0_0, 1, 1;
+    %delay 10, 0;
+    %set/v v0xb4af70_0, 0, 1;
+    %set/v v0xb4b020_0, 1, 1;
+    %set/v v0xb4aef0_0, 0, 1;
+    %delay 10, 0;
+    %set/v v0xb4af70_0, 0, 1;
+    %set/v v0xb4b020_0, 1, 1;
+    %set/v v0xb4aef0_0, 1, 1;
+    %delay 10, 0;
+    %set/v v0xb4af70_0, 1, 1;
+    %set/v v0xb4b020_0, 0, 1;
+    %set/v v0xb4aef0_0, 0, 1;
+    %delay 10, 0;
+    %set/v v0xb4af70_0, 1, 1;
+    %set/v v0xb4b020_0, 0, 1;
+    %set/v v0xb4aef0_0, 1, 1;
+    %delay 10, 0;
+    %set/v v0xb4af70_0, 1, 1;
+    %set/v v0xb4b020_0, 1, 1;
+    %set/v v0xb4aef0_0, 0, 1;
+    %delay 10, 0;
+    %set/v v0xb4af70_0, 1, 1;
+    %set/v v0xb4b020_0, 1, 1;
+    %set/v v0xb4aef0_0, 1, 1;
+    %delay 10, 0;
+    %vpi_call 2 22 "$finish";
+    %end;
+    .thread T_0;
+    .scope S_0xb33de0;
+T_1 ;
+    %vpi_call 2 27 "$monitor", "At time %2t, e_in = %d u_in = %d a_in = %d x_out = %d", $time, v0xb4af70_0, v0xb4b020_0, v0xb4aef0_0, v0xb4b0d0_0;
+    %end;
+    .thread T_1;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "blackbox_tb.v";
+    "blackbox.v";

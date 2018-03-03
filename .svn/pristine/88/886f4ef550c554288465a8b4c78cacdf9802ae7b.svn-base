@@ -1,0 +1,54 @@
+Grades for version committed on time
+	accumulate: 25.0 / 40
+			*Failed test: Base Case 1 
+				*Error running test: 
+					Exception occurred at PC=0x0040030c
+					  Bad address in data/stack read: 0x00000000
+			*Failed test: Base Case 1  (evil)
+				*Error running test: 
+					Exception occurred at PC=0x0040030c
+					  Bad address in data/stack read: 0x00000000
+			*Passed test: Base Case 2 
+			*Passed test: Base Case 2  (evil)
+			*Failed test: Base Case 3
+				*Error running test: 
+					Exception occurred at PC=0x0040030c
+					  Bad address in data/stack read: 0x00000000
+			*Failed test: Base Case 3 (evil)
+				*Error running test: 
+					Exception occurred at PC=0x0040030c
+					  Bad address in data/stack read: 0x00000000
+			*Passed test: Given 1
+			*Passed test: Given 1 (evil)
+			*Passed test: Given 2
+			*Passed test: Given 2 (evil)
+			*Passed test: TooShort
+			*Passed test: TooShort (evil)
+			*Failed test: Empty
+				*Your output: -1 
+			*Failed test: Empty (evil)
+				*Your output: -1 
+			*Passed test: Long
+			*Passed test: Long (evil)
+		
+	max_n_unique_substring: 30.0 / 30
+			*Passed test: BaseCase n
+			*Passed test: BaseCase n (evil)
+			*Passed test: test_null
+			*Passed test: test_null (evil)
+			*Passed test: empty
+			*Passed test: empty (evil)
+			*Passed test: given1
+			*Passed test: given1 (evil)
+			*Passed test: given2
+			*Passed test: given2 (evil)
+			*Passed test: edge_case_n
+			*Passed test: edge_case_n (evil)
+			*Passed test: broken
+			*Passed test: broken (evil)
+			*Passed test: whole
+			*Passed test: whole (evil)
+		
+Total: 55.0 / 70
+
+Final Score: 55.0 / 70

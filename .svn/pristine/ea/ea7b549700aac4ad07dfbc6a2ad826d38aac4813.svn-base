@@ -1,0 +1,53 @@
+module gcd_control(done, x_sel, y_sel, x_en, y_en, output_en, go, x_lt_y, x_ne_y, clock, reset);
+	output	x_sel, y_sel, x_en, y_en, output_en, done;
+	input	go, x_lt_y, x_ne_y;
+	input	clock , reset;
+
+	// IMPLEMENT YOUR STATE MACHINE HERE
+
+	wire  sg_next,sequality_next,scompare_next,sy_next,sx_next,sdone_next,sg,sequality,scompare,sy,sx,sdone,sequality_next0,scompare_next0,sy_next0,sx_next0,sdone_next0,sequality0,scompare0,sy0,sx0,sdone0,sin,sin_next;
+
+	assign sg_next = (sg&~go)|((sequality0|scompare0|sx0|sy0|sdone0)&go) |reset;
+	assign sin_next = sg&go&(~reset);
+
+
+	assign sequality_next = (sin|sx|sy)& go & (~reset);
+	assign scompare_next = sequality & x_ne_y &go & (~reset);
+	assign sy_next = scompare & x_lt_y&go &(~reset);
+	assign sx_next = scompare & (~x_lt_y) & go & (~reset);
+	assign sdone_next=((sequality&(~x_ne_y))|sdone) & go & (~reset);
+
+	//go =0
+
+	assign sequality_next0= (sin|sx0|sy0) & (~go) & (~reset);
+	assign scompare_next0 = ((sequality0&x_ne_y)|scompare)&(~go)&(~reset);
+	assign sy_next0= ((scompare0&x_lt_y)|sy)&(~go)&(~reset);
+	assign sx_next0 = ((scompare0&(~x_lt_y))|sx)&(~go)&(~reset);
+	assign sdone_next0 = ((sequality0 & (~x_lt_y))|sdone|sdone0)&(~go) &(~reset);
+
+	dffe g1(sg,sg_next,clock,1'b1,1'b0);
+	dffe i1(sin,sin_next,clock,1'b1,1'b0);
+
+	dffe fe(sequality,sequality_next,clock,1'b1,1'b0);
+	dffe fc(scompare,scompare_next,clock,1'b1,1'b0);
+	dffe fuy(sy,sy_next,clock,1'b1,1'b0);
+	dffe fux(sx,sx_next,clock,1'b1,1'b0);
+	dffe fdone(sdone,sdone_next,clock,1'b1,1'b0);
+
+	//go =0
+
+	dffe fe0(sequality0,sequality_next0,clock,1'b1,1'b0);
+	dffe fc0(scompare0,scompare_next0,clock,1'b1,1'b0);
+	dffe fuy0(sy0,sy_next0,clock,1'b1,1'b0);
+	dffe fux0(sx0,sx_next0,clock,1'b1,1'b0);
+	dffe fd0(sdone0,sdone_next0,clock,1'b1,1'b0);
+
+	assign x_sel = ~sin;
+	assign x_en = (sx|sin|sx0)&(~sdone);
+	assign y_sel = ~sin;
+	assign y_en = (sy|sin|sy0)&(~sdone);
+	assign output_en = ~sdone|~sdone0;
+	assign done = sdone|sdone;
+
+
+endmodule //GCD_control

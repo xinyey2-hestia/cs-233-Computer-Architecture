@@ -1,0 +1,41 @@
+Exam 4.1 grade report for xinyey2:
+
+REGULAR TESTS (70%):
+TEST 0: ERROR
+	Exception occurred at PC=0x0040014c
+	  Unaligned address in inst/data fetch: 0x10010005
+TEST 1: ERROR
+	Exception occurred at PC=0x00400154
+	  Unaligned address in inst/data fetch: 0x10010031
+TEST 2: ERROR
+	Exception occurred at PC=0x00400154
+	  Unaligned address in inst/data fetch: 0x10010076
+TEST 3: ERROR
+	Exception occurred at PC=0x00400154
+	  Unaligned address in inst/data fetch: 0x100100c2
+TEST 4: ERROR
+	Exception occurred at PC=0x00400154
+	  Unaligned address in inst/data fetch: 0x100100ff
+
+SCORE: 0.00%
+
+EVIL TESTS (30%):
+TEST 0: ERROR
+	Exception occurred at PC=0x00400248
+	  Unaligned address in inst/data fetch: 0x10010005
+TEST 1: ERROR
+	Exception occurred at PC=0x00400250
+	  Unaligned address in inst/data fetch: 0x10010031
+TEST 2: ERROR
+	Exception occurred at PC=0x00400250
+	  Unaligned address in inst/data fetch: 0x10010076
+TEST 3: ERROR
+	Exception occurred at PC=0x00400250
+	  Unaligned address in inst/data fetch: 0x100100c2
+TEST 4: ERROR
+	Exception occurred at PC=0x00400250
+	  Unaligned address in inst/data fetch: 0x100100ff
+
+SCORE: 0.00%
+
+FINAL SCORE: 0.00%

@@ -1,0 +1,39 @@
+
+
+
+
+
+// GCD datapath
+module gcd_circuit(out, x_lt_y, x_ne_y, X, Y, x_sel, y_sel, x_en, y_en, output_en, clock, reset);
+	output  [31:0] out;
+	output  x_lt_y, x_ne_y;
+	input	[31:0]	X, Y;
+	input   x_sel, y_sel, x_en, y_en, output_en, clock, reset;
+	wire [31:0] xminusy,yminusx,tempx,tempy,A,B;
+
+
+
+    // IMPLEMENT gcd_circuit HERE
+
+
+
+
+mux2v m1(tempx,X,xminusy,x_sel);
+register r1(A,tempx,clock,x_en,reset);
+subtractor s1(xminusy,A,B);
+
+mux2v m2(tempy,Y,yminusx,y_sel);
+register r2(B,tempy,clock,y_en,reset);
+subtractor s2(yminusx,B,A);
+
+
+comparator c1(x_lt_y,x_ne_y,A,B);
+register r4(out,B,clock,output_en,reset);
+
+
+
+
+
+
+
+endmodule // gcd_circuit

@@ -1,0 +1,28 @@
+Grades for version committed on time
+	extract_message: 40.0 / 40
+			*Passed test: simple
+				*Encoded message: [38, 28, 107, 19, 32, 127, 127, 0] (&k ).
+				*Expected decode: [108, 109, 99, 102, 106, 117, 100, 0] (lmcfjud)
+				*Actual decode: [108, 109, 99, 102, 106, 117, 100, 0] (lmcfjud)
+			*Passed test: 3 words
+				*Encoded message: [19, 47, 94, 6, 104, 255, 127, 0, 118, 112, 251, 96, 16, 255, 255, 0, 22, 2, 24, 24, 0, 31, 30, 0] (/^hÿvpû`ÿÿ).
+				*Expected decode: [99, 111, 110, 118, 101, 114, 116, 32, 100, 101, 97, 100, 119, 111, 111, 100, 32, 99, 97, 108, 109, 0] (convert deadwood calm)
+				*Actual decode: [99, 111, 110, 118, 101, 114, 116, 32, 100, 101, 97, 100, 119, 111, 111, 100, 32, 99, 97, 108, 109, 0, 0, 0] (convert deadwood calm)
+			*Passed test: 5 words
+				*Encoded message: [130, 69, 137, 18, 204, 255, 223, 0, 245, 216, 45, 9, 52, 255, 253, 0, 151, 142, 57, 32, 150, 255, 191, 0, 141, 3, 27, 133, 82, 255, 223, 0, 0, 1, 1, 1, 0, 1, 1, 0] (EÌÿßõØ-	4ÿý9 ÿ¿Rÿß).
+				*Expected decode: [102, 105, 114, 116, 104, 32, 114, 117, 109, 32, 117, 110, 115, 117, 99, 99, 101, 115, 115, 102, 117, 108, 32, 115, 111, 118, 105, 101, 116, 32, 112, 105, 110, 0] (firth rum unsuccessful soviet pin)
+				*Actual decode: [102, 105, 114, 116, 104, 32, 114, 117, 109, 32, 117, 110, 115, 117, 99, 99, 101, 115, 115, 102, 117, 108, 32, 115, 111, 118, 105, 101, 116, 32, 112, 105, 110, 0, 0, 0, 0, 0, 0, 0] (firth rum unsuccessful soviet pin)
+			*Passed test: Thousands of words
+				*Output hidden (too long)
+		
+	count_ones: 40.0 / 40
+			*Passed test: 2
+			*Passed test: 55
+			*Passed test: 42
+			*Passed test: 0xffffffff
+			*Passed test: 0x12345678
+			*Passed test: 0x55555555
+		
+Total: 80.0 / 80
+
+Final Score: 80.0 / 80

@@ -1,0 +1,17 @@
+module gcd_control(done, x_sel, y_sel, x_en, y_en, output_en, go, x_lt_y, x_ne_y, clock, reset);
+	output	x_sel, y_sel, x_en, y_en, output_en, done;
+	input	go, x_lt_y, x_ne_y;
+	input	clock , reset;
+
+	// IMPLEMENT YOUR STATE MACHINE HERE
+dffe d1(y_sel,x_lt_y,clock,go,reset);
+dffe d2(y_en,x_lt_y,clock,go,reset);
+dffe d3(x_sel,~x_lt_y,clock,go,reset);
+dffe d4(x_en,~x_lt_y,clock,go,reset);
+dffe d5(output_en,~x_ne_y,clock,go,reset);
+and a1(done,~x_ne_y,go);
+
+
+
+
+endmodule //GCD_control

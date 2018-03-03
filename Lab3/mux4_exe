@@ -1,0 +1,151 @@
+#! /usr/bin/vvp
+:ivl_version "0.9.6 " "(v0_9_6)";
+:vpi_time_precision + 0;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_0x23bd0f0 .scope module, "mux4_test" "mux4_test" 2 1;
+ .timescale 0 0;
+v0x23e6880_0 .var "A", 0 0;
+v0x23e6950_0 .var "B", 0 0;
+v0x23e6a20_0 .var "C", 0 0;
+v0x23e6af0_0 .var "D", 0 0;
+v0x23e6bc0_0 .var "control", 1 0;
+v0x23e6c40_0 .net "out", 0 0, L_0x23e7660; 1 drivers
+S_0x23bc900 .scope module, "m4" "mux4" 2 27, 3 16, S_0x23bd0f0;
+ .timescale 0 0;
+v0x23e6270_0 .net "A", 0 0, v0x23e6880_0; 1 drivers
+v0x23e6310_0 .net "B", 0 0, v0x23e6950_0; 1 drivers
+v0x23e63c0_0 .net "C", 0 0, v0x23e6a20_0; 1 drivers
+v0x23e6470_0 .net "D", 0 0, v0x23e6af0_0; 1 drivers
+v0x23e6550_0 .net "control", 1 0, v0x23e6bc0_0; 1 drivers
+v0x23e65d0_0 .net "o1", 0 0, L_0x23e6ed0; 1 drivers
+v0x23e66e0_0 .net "o2", 0 0, L_0x23e7280; 1 drivers
+v0x23e67b0_0 .alias "out", 0 0, v0x23e6c40_0;
+L_0x23e6fd0 .part v0x23e6bc0_0, 0, 1;
+L_0x23e7380 .part v0x23e6bc0_0, 0, 1;
+L_0x23e7760 .part v0x23e6bc0_0, 1, 1;
+S_0x23e5cf0 .scope module, "m1" "mux2" 3 22, 3 2, S_0x23bc900;
+ .timescale 0 0;
+L_0x23e6d10 .functor NOT 1, L_0x23e6fd0, C4<0>, C4<0>, C4<0>;
+L_0x23e6d70 .functor AND 1, v0x23e6880_0, L_0x23e6d10, C4<1>, C4<1>;
+L_0x23e6e20 .functor AND 1, v0x23e6950_0, L_0x23e6fd0, C4<1>, C4<1>;
+L_0x23e6ed0 .functor OR 1, L_0x23e6d70, L_0x23e6e20, C4<0>, C4<0>;
+v0x23e5de0_0 .alias "A", 0 0, v0x23e6270_0;
+v0x23e5ea0_0 .alias "B", 0 0, v0x23e6310_0;
+v0x23e5f40_0 .net "control", 0 0, L_0x23e6fd0; 1 drivers
+v0x23e5fe0_0 .net "not_control", 0 0, L_0x23e6d10; 1 drivers
+v0x23e6060_0 .alias "out", 0 0, v0x23e65d0_0;
+v0x23e6110_0 .net "wA", 0 0, L_0x23e6d70; 1 drivers
+v0x23e61d0_0 .net "wB", 0 0, L_0x23e6e20; 1 drivers
+S_0x23e5770 .scope module, "m2" "mux2" 3 23, 3 2, S_0x23bc900;
+ .timescale 0 0;
+L_0x23e70c0 .functor NOT 1, L_0x23e7380, C4<0>, C4<0>, C4<0>;
+L_0x23e7120 .functor AND 1, v0x23e6a20_0, L_0x23e70c0, C4<1>, C4<1>;
+L_0x23e71d0 .functor AND 1, v0x23e6af0_0, L_0x23e7380, C4<1>, C4<1>;
+L_0x23e7280 .functor OR 1, L_0x23e7120, L_0x23e71d0, C4<0>, C4<0>;
+v0x23e5860_0 .alias "A", 0 0, v0x23e63c0_0;
+v0x23e5920_0 .alias "B", 0 0, v0x23e6470_0;
+v0x23e59c0_0 .net "control", 0 0, L_0x23e7380; 1 drivers
+v0x23e5a60_0 .net "not_control", 0 0, L_0x23e70c0; 1 drivers
+v0x23e5ae0_0 .alias "out", 0 0, v0x23e66e0_0;
+v0x23e5b90_0 .net "wA", 0 0, L_0x23e7120; 1 drivers
+v0x23e5c50_0 .net "wB", 0 0, L_0x23e71d0; 1 drivers
+S_0x23bc040 .scope module, "m3" "mux2" 3 24, 3 2, S_0x23bc900;
+ .timescale 0 0;
+L_0x23e7420 .functor NOT 1, L_0x23e7760, C4<0>, C4<0>, C4<0>;
+L_0x23e7480 .functor AND 1, L_0x23e6ed0, L_0x23e7420, C4<1>, C4<1>;
+L_0x23e7570 .functor AND 1, L_0x23e7280, L_0x23e7760, C4<1>, C4<1>;
+L_0x23e7660 .functor OR 1, L_0x23e7480, L_0x23e7570, C4<0>, C4<0>;
+v0x23cd4f0_0 .alias "A", 0 0, v0x23e65d0_0;
+v0x23e5360_0 .alias "B", 0 0, v0x23e66e0_0;
+v0x23e5400_0 .net "control", 0 0, L_0x23e7760; 1 drivers
+v0x23e54a0_0 .net "not_control", 0 0, L_0x23e7420; 1 drivers
+v0x23e5550_0 .alias "out", 0 0, v0x23e6c40_0;
+v0x23e55f0_0 .net "wA", 0 0, L_0x23e7480; 1 drivers
+v0x23e56d0_0 .net "wB", 0 0, L_0x23e7570; 1 drivers
+    .scope S_0x23bd0f0;
+T_0 ;
+    %set/v v0x23e6880_0, 0, 1;
+    %end;
+    .thread T_0;
+    .scope S_0x23bd0f0;
+T_1 ;
+    %delay 1, 0;
+    %load/v 8, v0x23e6880_0, 1;
+    %inv 8, 1;
+    %set/v v0x23e6880_0, 8, 1;
+    %jmp T_1;
+    .thread T_1;
+    .scope S_0x23bd0f0;
+T_2 ;
+    %set/v v0x23e6950_0, 0, 1;
+    %end;
+    .thread T_2;
+    .scope S_0x23bd0f0;
+T_3 ;
+    %delay 2, 0;
+    %load/v 8, v0x23e6950_0, 1;
+    %inv 8, 1;
+    %set/v v0x23e6950_0, 8, 1;
+    %jmp T_3;
+    .thread T_3;
+    .scope S_0x23bd0f0;
+T_4 ;
+    %set/v v0x23e6a20_0, 0, 1;
+    %end;
+    .thread T_4;
+    .scope S_0x23bd0f0;
+T_5 ;
+    %delay 4, 0;
+    %load/v 8, v0x23e6a20_0, 1;
+    %inv 8, 1;
+    %set/v v0x23e6a20_0, 8, 1;
+    %jmp T_5;
+    .thread T_5;
+    .scope S_0x23bd0f0;
+T_6 ;
+    %set/v v0x23e6af0_0, 0, 1;
+    %end;
+    .thread T_6;
+    .scope S_0x23bd0f0;
+T_7 ;
+    %delay 8, 0;
+    %load/v 8, v0x23e6af0_0, 1;
+    %inv 8, 1;
+    %set/v v0x23e6af0_0, 8, 1;
+    %jmp T_7;
+    .thread T_7;
+    .scope S_0x23bd0f0;
+T_8 ;
+    %set/v v0x23e6bc0_0, 0, 2;
+    %end;
+    .thread T_8;
+    .scope S_0x23bd0f0;
+T_9 ;
+    %vpi_call 2 16 "$dumpfile", "mux4.vcd";
+    %vpi_call 2 17 "$dumpvars", 1'sb0, S_0x23bd0f0;
+    %delay 16, 0;
+    %movi 8, 1, 2;
+    %set/v v0x23e6bc0_0, 8, 2;
+    %delay 16, 0;
+    %movi 8, 2, 2;
+    %set/v v0x23e6bc0_0, 8, 2;
+    %delay 16, 0;
+    %set/v v0x23e6bc0_0, 1, 2;
+    %delay 16, 0;
+    %vpi_call 2 23 "$finish";
+    %end;
+    .thread T_9;
+    .scope S_0x23bd0f0;
+T_10 ;
+    %vpi_call 2 31 "$display", "A B C D s o";
+    %vpi_call 2 32 "$monitor", "%d %d %d %d %d %d (at time %t)", v0x23e6880_0, v0x23e6950_0, v0x23e6a20_0, v0x23e6af0_0, v0x23e6bc0_0, v0x23e6c40_0, $time;
+    %end;
+    .thread T_10;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "mux4_tb.v";
+    "mux.v";

@@ -1,0 +1,693 @@
+
+
+
+
+# syscall constants
+PRINT_STRING = 4
+PRINT_CHAR   = 11
+PRINT_INT    = 1
+
+# debug constants
+PRINT_INT_ADDR   = 0xffff0080
+PRINT_FLOAT_ADDR = 0xffff0084
+PRINT_HEX_ADDR   = 0xffff0088
+
+# spimbot memory-mapped I/O
+VELOCITY       = 0xffff0010
+ANGLE          = 0xffff0014
+ANGLE_CONTROL  = 0xffff0018
+BOT_X          = 0xffff0020
+BOT_Y          = 0xffff0024
+OTHER_BOT_X    = 0xffff00a0
+OTHER_BOT_Y    = 0xffff00a4
+TIMER          = 0xffff001c
+SCORES_REQUEST = 0xffff1018
+
+REQUEST_JETSTREAM	= 0xffff00dc
+REQUEST_RADAR		= 0xffff00e0
+BANANA			= 0xffff0040
+MUSHROOM		= 0xffff0044
+STARCOIN		= 0xffff0048
+
+REQUEST_PUZZLE		= 0xffff00d0
+SUBMIT_SOLUTION		= 0xffff00d4
+
+# interrupt constants
+BONK_MASK	= 0x1000
+BONK_ACK	= 0xffff0060
+
+TIMER_MASK	= 0x8000
+TIMER_ACK	= 0xffff006c
+
+REQUEST_RADAR_INT_MASK	= 0x4000
+REQUEST_RADAR_ACK	= 0xffff00e4
+
+REQUEST_PUZZLE_ACK	= 0xffff00d8
+REQUEST_PUZZLE_INT_MASK	= 0x800
+
+.data
+# put your data things here
+
+.align 2
+event_horizon_data: .space 32
+
+sector_info: .space 256
+star_info: .space 32
+
+# whether the scan has finished or not
+scan_flag:
+		.space 4
+
+
+
+.text
+main:
+	#j anothermain
+	li $t9,0
+
+eat:
+	li $t4,REQUEST_RADAR_INT_MASK
+	
+	or $t4,$t4,1         #interrupt enable
+	
+	mtc0 $t4,$12  
+	sw $0,scan_flag   
+	
+	li $t8,0
+	sw $t8,VELOCITY
+	#addi $t9, $t9,1
+	li $t8,4
+	beq $t9,$t8,cyclex
+
+start_scan:
+	la $t0,sector_info
+	sw $t0,REQUEST_RADAR      #the map of star dust
+
+
+
+
+xcoor:
+	li $t8,10
+	sw $t8,VELOCITY
+	#la $t0,sector_info
+	#sw $t0,REQUEST_RADAR
+	lw $t3,BOT_X          #get botx
+	lw $t1, 0($t0)        #get the first coin x-coor
+	beq $t1,0xffffffff, run
+	
+	srl $t1,$t1,16
+	beq $t1,$t3,ycoor
+	bgt $t1,$t3,right    # move to east
+
+	li $t6,180
+	sw $t6,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	j xcoor
+run:
+	li $t5,10000
+	li $t6,0
+	li $t7,5
+	sw $t7,ANGLE
+	li $t8,0
+	sw $t8,ANGLE_CONTROL
+	j runloop
+runloop:
+	bgt $t6,$t5,eat
+
+	addi $t6,$t6,1
+	j runloop
+
+
+right:
+	li $t6,0
+	sw $t6,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	j xcoor
+
+ycoor:
+	#la $t0,sector_info
+	#sw $t0,REQUEST_RADAR
+	lw $t1,0($t0)
+	li $t5,65535
+	and $t1,$t1,$t5
+	lw $t3,BOT_Y
+	beq $t3,$t1,temp
+	bgt $t1,$t3,down
+	
+	li $t6, 270
+	sw $t6,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	j ycoor
+temp:
+	add $t9,$t9,1
+	j eat
+down:
+	li $t6,90
+	sw $t6,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	j ycoor
+
+
+cyclex:         ##get y
+	la $t0, event_horizon_data
+	sw $t0, REQUEST_JETSTREAM
+	li $t8,10
+	sw $t8,VELOCITY
+	lw $t3,BOT_Y          #get botx
+	lw $t4,BOT_X
+	mul $t5, $t3,300
+	add $t5, $t5,$t4
+	add $t5, $t0,$t5
+	lb $t5, 0($t0)
+	beq $t5,2, run123
+
+	blt $t3, 109, movedown
+	bgt $t3, 109, moveup
+	
+	j movex
+
+movex:
+	la $t0, event_horizon_data
+	sw $t0, REQUEST_JETSTREAM
+	li $t8,10
+	sw $t8,VELOCITY
+	lw $t3,BOT_Y          #get botx
+	lw $t4,BOT_X
+	mul $t5, $t3,300
+	add $t5, $t5,$t4
+	add $t5, $t0,$t5
+	lb $t5, 0($t5)
+	beq $t5,2, runcycle
+	
+	blt $t4, 150, moveright
+moveleft:
+	li $t8,10
+	sw $t8,VELOCITY
+	lw $t3,BOT_Y          #get botx
+	lw $t4,BOT_X
+	mul $t5, $t3,300
+	add $t5, $t5,$t4
+	add $t5, $t0,$t5
+	lb $t5, 0($t5)
+	beq $t5,2, runcycle
+	li $t6,180
+	sw $t6,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	j moveleft
+
+moveright:
+	li $t8,10
+	sw $t8,VELOCITY
+	lw $t3,BOT_Y          #get botx
+	lw $t4,BOT_X
+	mul $t5, $t3,300
+	add $t5, $t5,$t4
+	add $t5, $t0,$t5
+	lb $t5, 0($t5)
+	beq $t5,2, runcycle
+	li $t6,0
+	sw $t6,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	j moveright
+	
+	
+	
+
+movedown:
+	li $t6,90
+	sw $t6,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	j cyclex
+moveup:
+	li $t6, 270
+	sw $t6,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	j cyclex
+
+runcycle:
+	la $t0,sector_info
+	sw $t0,REQUEST_RADAR      #the map of star dust
+pushoutstar:
+	lw $t1, 0($t0)
+	beq $t1,0xffffffff, banana
+	add $t0,$t0,1
+	j pushoutstar
+	
+banana:
+	lw $t1,1($t0)
+	beq $t1,0xffffffff, run123
+	srl $t3, $t1,16  #y
+	and $t4,0xffff   #x
+	sub $t3,$t3,5
+	sub $t4,$t4,5
+	la   $t0, event_horizon_data
+	sw	 $t0, REQUEST_JETSTREAM      #t0 is the map
+	li $t5,0
+	li $t6,0
+	j outer_loop
+
+outer_loop:
+	bgt $t5,10,run123
+	j inner_loop
+inner_loop:
+	bgt $t6,10,updateouter
+	mul $t7,$t3,300
+	add $t7,$t7,$t4
+	add $t7, $t7,$t0
+	li $t8,1
+	sb $t8, 0($t7)
+	add $t4,$t4,1
+	add $t6,$t6,1
+	j inner_loop
+updateouter:
+	add $t5,$t5,1
+	add $t3,$t3,1
+	sub $t4,$t4,10
+	j outer_loop
+run123:
+ 	la $t0, event_horizon_data
+	sw	 $t0, REQUEST_JETSTREAM      #t0 is the map
+	li $t4,10	
+	sw $t4,VELOCITY
+	li $t1, 300
+	sw $t1,ANGLE
+	li $t2,1
+	sw $t2,ANGLE_CONTROL
+	li $t8, 120
+	j Ycoor
+
+Ycoor:
+	la $t0, event_horizon_data
+	sw $t0, REQUEST_JETSTREAM
+	
+	#lb $t1,4($t0)                     
+	lw $t3,BOT_Y                       # get y
+	li $t4,300
+    mul $t3,$t3,$t4
+	lw $t5, BOT_X                      # cur x
+	add $t3,$t3,$t5
+	add $t0, $t0,$t3                #fin
+	lb $t1,0($t0)					#0,1,2?
+	li $t2,1
+	li $t6,2
+	li $t7,0
+	beq $t1,$t6,Ycoor
+	beq $t1,$t2,backward
+	
+backward:
+	beq $t7,$t8,Inward
+	li $t2,-10
+	sw $t2,VELOCITY
+	add $t7,$t7,1
+	j movet
+
+movet:
+	la $t0, event_horizon_data
+	sw $t0, REQUEST_JETSTREAM
+	
+	#lb $t1,4($t0)                     
+	lw $t3,BOT_Y                       # get y
+	li $t4,300
+    mul $t3,$t3,$t4
+	lw $t5, BOT_X                      # cur x
+	add $t3,$t3,$t5
+	add $t0, $t0,$t3                #fin
+	j backward
+
+Inward:
+	li $t5,29
+	sw $t5,0xffff0014($zero)
+	li $t3,0
+	sw $t3,0xffff0018($zero)
+	li $t4,10	
+	sw $t4,VELOCITY
+	j Ycoor
+infinite:
+	j  infinite
+
+anothermain:
+	la  $t0, event_horizon_data
+	sw  $t0, REQUEST_JETSTREAM
+	
+
+	li  $t7, 10
+	sw  $t7, VELOCITY
+	li  $t7, 0
+	sw  $t7, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+
+	# enable interrupts
+	#li	$t4, REQUEST_RADAR_INT_MASK
+	#or	$t4, $t4, 1
+
+	#mtc0	$t4, $12
+	li $a0 , 0
+
+loop:
+	add $a0, $a0, 1
+	lw  $t5, BOT_X                              # t5 is x
+	lw  $t1, BOT_Y                              # t1 is y
+	lw  $t6, STARCOIN
+	blt $t6, 4, rua
+	#la  $t7, puzzle_data
+	#sw  $t7, REQUEST_PUZZLE
+rua:
+	bge	$a0, 100, radar_go
+	j   normal
+
+radar_go:
+	la	$t7, sector_info
+	sw	$t7, REQUEST_RADAR
+	li  $a0, 0
+
+normal:
+	bge $t5, 150, right_half
+	bge $t1, 150, left_bot
+
+left_up:
+	add $t5, $t5, 1
+	mul $t1, $t1, 300
+	add $t2, $t5, $t1
+	add $t2, $t2, $t0
+
+	lb  $t3, 0($t2)
+	beq $t3, 2, head_right
+	sub $t2, $t2, 301
+	lb  $t3, 0($t2)
+	beq $t3, 7, head_right
+	li  $t6, 5
+	sw  $t6, VELOCITY
+	li  $t4, 270                                # if right not ok, go up
+	sw  $t4, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	j   loop
+head_right:
+	li  $t6, 5
+	sw  $t6, VELOCITY
+  	li  $t4, 0                                  # if right ok, go right
+  	sw  $t4, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+  	j   loop
+
+
+
+left_bot:
+	sub $t1, $t1, 1
+	mul $t1, $t1, 300
+	add $t2, $t5, $t1
+	add $t2, $t2, $t0
+	lb  $t3, 0($t2)
+	beq $t3, 2, head_up
+	add $t2, $t2, 299
+	lb  $t3, 0($t2)
+	beq $t3, 7, head_up
+	li  $t6, 5
+	sw  $t6, VELOCITY
+	li  $t4, 180                                # if up not ok, go left
+	sw  $t4, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	j   loop
+head_up:
+	li  $t6, 5
+	sw  $t6, VELOCITY
+	li  $t4, 270                                # if up ok, go up
+	sw  $t4, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	j   loop
+
+right_half:
+	bge $t1, 150, right_bot
+
+
+right_up:
+	add $t1, $t1, 1
+	mul $t1, $t1, 300
+	add $t2, $t5, $t1
+	add $t2, $t2, $t0
+	lb  $t3, 0($t2)
+	beq $t3, 2, head_down
+	sub $t2, $t2, 299
+	lb  $t3, 0($t2)
+	beq $t3, 7, head_down
+	li  $t6, 5
+	sw  $t6, VELOCITY
+	li  $t4, 0                                  # if down not ok, go right
+	sw  $t4, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	j   loop
+head_down:
+	li  $t6, 10
+	sw  $t6, VELOCITY
+	li  $t4, 90                                 # if down ok, go down
+	sw  $t4, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	j   loop
+
+
+right_bot:
+	sub $t5, $t5, 1
+	mul $t1, $t1, 300
+	add $t2, $t5, $t1
+	add $t2, $t2, $t0
+	lb  $t3, 0($t2)
+	beq $t3, 2, head_left
+	add $t2, $t2, 301
+	lb  $t3, 0($t2)
+	beq $t3, 7, head_left
+	li  $t6, 5
+	sw  $t6, VELOCITY
+	li  $t4, 90                                 # if left not ok, go down
+	sw  $t4, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	j   loop
+head_left:
+	li  $t6, 5
+	sw  $t6, VELOCITY
+	li  $t4, 180                                # if left ok, go left
+	sw  $t4, ANGLE
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	j   loop
+
+okbanana:
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	li  $t7, 45
+	sw  $t7, ANGLE
+	li  $t7, 5
+	sw  $t7, VELOCITY
+
+	j   okbanana
+
+.kdata
+chunkIH:.space 40 # 2 registers?
+non_intrpt_str: .asciiz "Non-interrupt exception\n"
+unhandled_str: .asciiz "Unhandled interrupt type\n"
+
+.ktext  0x80000180
+interrupt_handler:
+.set noat
+	move $k1,$at
+.set at
+	la 	$k0, chunkIH
+	sw 	$a0, 0($k0) 		# Get some free registers
+	sw 	$a1, 4($k0) 		# by storing them to a global variable
+	sw	$t0, 8($k0)
+	sw	$t1, 12($k0)
+	sw	$t2, 16($k0)
+	sw	$t3, 20($k0)
+	sw	$t4, 24($k0)
+	sw	$v0, 28($k0)
+	sw	$t5, 32($k0)
+	sw	$t6, 36($k0)
+	mfc0 	$k0, $13 		# Get Cause register
+	srl 	$a0, $k0, 2	
+	and 	$a0, $a0, 0xf		# ExcCode field
+	bne 	$a0, 0, non_intrpt
+
+
+interrupt_dispatch:
+	mfc0 $k0, $13
+	beq $k0, $zero, done   #handle all
+	and $a0, $k0, 0x4000   # is there a scan interrupt?
+	bne $a0, 0, RADAR_interrupt
+
+	
+
+	li $v0,4
+	la $a0, unhandled_str
+	syscall
+	j done
+
+
+RADAR_interrupt:
+	sw	$a1, REQUEST_RADAR_ACK
+	la	$t6, sector_info
+
+find_star_loop:
+
+	lw  $t0, 0($t6)
+	beq $t0, 0xffffffff, find_banana_loop
+	add $t6, $t6, 4
+	j   find_star_loop
+
+find_banana_loop:
+
+
+	add $t6, $t6, 4
+	lw	$t0, 0($t6)                             	# location of the first banana
+	beq	$t0, 0xffffffff, interrupt_dispatch	      # no banana found
+
+	srl	$t3, $t0, 16
+	and	$t3, $t3, 0x0000ffff	# banana_X
+	and	$t4, $t0, 0x0000ffff	# banana_Y
+	sub $t3, $t3, 4
+	sub $t4, $t4, 4
+	mul $t4, $t4, 300
+	add $t3, $t3, $t4
+	la  $t5, event_horizon_data
+	add $t3, $t3, $t5
+	li  $t5, 7
+
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)
+	add $t3, $t3, 300                      #1
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)
+	add $t3, $t3, 300                         #2
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)
+	add $t3, $t3, 300                           #3
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)
+	add $t3, $t3, 300                         #4
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)
+	add $t3, $t3, 300                         #5
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)
+	add $t3, $t3, 300                     #6
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)
+	add $t3, $t3, 300                   #7
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)
+	add $t3, $t3, 300                         #8
+	sb  $t5, 0($t3)
+	sb  $t5, 1($t3)
+	sb  $t5, 2($t3)
+	sb  $t5, 3($t3)
+	sb  $t5, 4($t3)
+	sb  $t5, 5($t3)
+	sb  $t5, 6($t3)
+	sb  $t5, 7($t3)
+	sb  $t5, 8($t3)                        #9
+
+	#j otherbanana
+	j find_banana_loop
+	
+non_intrpt:
+	li $v0,4
+	la $a0,non_intrpt_str
+	syscall
+	j done
+
+done:
+	la $k0, chunkIH
+	lw $a0, 0($k0)
+	lw $a1, 4($k0)
+lw	$t0, 8($k0)
+	lw	$t1, 12($k0)
+	lw	$t2, 16($k0)
+	lw	$t3, 20($k0)
+	lw	$t4, 24($k0)
+	lw	$v0, 28($k0)
+	lw	$t5, 32($k0)
+	lw	$t6, 36($k0)
+.set noat
+	move $at, $k1
+.set at
+	eret
+
+otherbanana:
+	li  $t7, 1
+	sw  $t7, ANGLE_CONTROL
+	li  $t7, 45
+	sw  $t7, ANGLE
+	li  $t7, 10
+	sw  $t7, VELOCITY
+
+	j   otherbanana
+

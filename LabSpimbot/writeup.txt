@@ -1,0 +1,3 @@
+Our team basically just eat 4 stars ahead of everything, ignore the banana. The if we have all four stars, we solve the puzzle. Once we solve the puzzle, we than move to the jetstream and then start cycling. The strategy that we use to move to the jet stream is: first we move up or down untill our Y is 109, than if we are on the right half of the map, move left, otherwise move right, untill we hit the jetstream. Also, when we move up or down, if we hit the jetsteam, we also will start cycling. 
+
+When we cycles, we only run on the jetstream we check if our radar has detected any banana, if we have the banana, we than set the pixel around the banana to a value, so we won't hit the banana again. Than we just go cycle.
